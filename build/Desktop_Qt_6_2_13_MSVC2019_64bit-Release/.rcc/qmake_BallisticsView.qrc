@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/BallisticsView">
+    <file alias="qmldir">E:/Dev/Other/Projects/BallisticsView/build/Desktop_Qt_6_2_13_MSVC2019_64bit-Release/BallisticsView/qmldir</file>
+  </qresource>
+</RCC>
+

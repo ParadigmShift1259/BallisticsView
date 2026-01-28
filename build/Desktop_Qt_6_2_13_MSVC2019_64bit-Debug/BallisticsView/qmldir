@@ -1,0 +1,6 @@
+module BallisticsView
+typeinfo appBallisticsView.qmltypes
+prefer :/BallisticsView/
+Main 1.0 Main.qml
+LabeledSlider 1.0 LabeledSlider.qml
+

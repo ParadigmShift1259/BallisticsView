@@ -1,0 +1,44 @@
+[
+    {
+        "classes": [
+            {
+                "className": "Calculations",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "distance",
+                                "type": "double"
+                            },
+                            {
+                                "name": "targetDist",
+                                "type": "double"
+                            },
+                            {
+                                "name": "heightAboveHub",
+                                "type": "double"
+                            },
+                            {
+                                "name": "targetHeight",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "calc",
+                        "returnType": "double"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "Calculations",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "Calculations.h",
+        "outputRevision": 68
+    }
+]

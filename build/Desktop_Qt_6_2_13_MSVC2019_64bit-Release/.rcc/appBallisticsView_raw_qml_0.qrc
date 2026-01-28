@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/BallisticsView/">
+    <file alias="Main.qml">E:/Dev/Other/Projects/BallisticsView/Main.qml</file>
+    <file alias="LabeledSlider.qml">E:/Dev/Other/Projects/BallisticsView/LabeledSlider.qml</file>
+  </qresource>
+</RCC>
+
