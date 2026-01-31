@@ -1,7 +1,9 @@
 #include "Calculations.h"
 
 #include <algorithm>
+#ifdef CCP20
 #include <format>
+#endif
 
 using namespace units::math;
 using namespace units;
@@ -295,6 +297,7 @@ std::string Calculations::GetIntermediateResults()
     return out;
 }
 
+#ifdef CPP20
 std::string Calculations::GetCsvHeader()
 {
     std::string out;
@@ -472,3 +475,172 @@ std::string Calculations::GetCsvDataRow2()
 
     return out;
 }
+#else
+std::string Calculations::GetCsvHeader()
+{
+    std::string out;
+
+    // Inputs
+    out += "Dist to Front of Hub [";
+    out += m_xInput.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "Dist from Front of Hub [";
+    out += m_xTarget.convert<foot>().abbreviation();
+    out += "],";
+
+    // Outputs
+    out += "Flywheel [";
+    out += m_rpmInit.abbreviation();
+    out += "] HAH ";
+    out += std::to_string(m_heightAboveHub.convert<foot>().to<double>());
+    out += ",";
+
+    out += "angleInit [";
+    out += m_angleInit.abbreviation();
+    out += "] HAH ";
+    out += std::to_string(m_angleInit.to<double>());
+    out += ",";
+
+    out += "landingAngle [";
+    out += m_landingAngle.abbreviation();
+    out += "] HAH ";
+    out += std::to_string(m_heightAboveHub.convert<foot>().to<double>());
+    out += ",";
+
+    // Intermediate
+    out += "timeTotal [";
+    out += m_timeTotal.abbreviation();
+    out += "],";
+
+    out += "heightAboveHub [";
+    out += m_heightAboveHub.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "heightTarget [";
+    out += m_heightTarget.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "heightMax [";
+    out += m_heightMax.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "velInit [";
+    out += m_velInit.abbreviation();
+    out += "]";
+
+    return out;
+}
+
+std::string Calculations::GetCsvHeader2()
+{
+    std::string out;
+
+    // Inputs
+    out += "Vision Dist to Cemter of Hub [";
+    out += m_xInput.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "Dist to Front of Hub [";
+    out += m_xInput.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "Dist from Front of Hub [";
+    out += m_xTarget.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "heightAboveHub [";
+    out += m_heightAboveHub.convert<foot>().abbreviation();
+    out += "],";
+
+    out += "heightTarget [";
+    out += m_heightTarget.convert<foot>().abbreviation();
+    out += "],";
+
+    // Outputs
+    out += "Flywheel [";
+    out += m_rpmInit.abbreviation();
+    out += "],";
+
+    out += "angleInit [";
+    out += m_angleInit.abbreviation();
+    out += "],";
+
+    out += "landingAngle [";
+    out += m_landingAngle.abbreviation();
+    out += "]";
+
+    return out;
+}
+
+std::string Calculations::GetCsvDataRow()
+{
+    std::string out;
+
+    // Inputs
+    out += std::to_string(m_xInput.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_xTarget.convert<foot>().to<double>());
+    out += ",";
+
+    // Outputs
+    out += std::to_string(m_rpmInit.to<double>());
+    out += ",";
+
+    out += std::to_string(m_angleInit.to<double>());
+    out += ",";
+
+    out += std::to_string(m_landingAngle.to<double>());
+    out += ",";
+
+    // Intermediate
+    out += std::to_string(m_timeTotal.to<double>());
+    out += ",";
+
+    out += std::to_string(m_heightAboveHub.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_heightTarget.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_heightMax.convert<foot>().to<double>());
+    out += ",";
+  
+    out += std::to_string(m_velInit.to<double>());
+
+    return out;
+}
+
+std::string Calculations::GetCsvDataRow2()
+{
+    std::string out;
+
+    // Inputs
+    out += std::to_string(m_xInput.convert<foot>().to<double>() + m_xTarget.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_xInput.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_xTarget.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_heightAboveHub.convert<foot>().to<double>());
+    out += ",";
+
+    out += std::to_string(m_heightTarget.convert<foot>().to<double>());
+    out += ",";
+
+    // Outputs
+    out += std::to_string(m_rpmInit.to<double>());
+    out += ",";
+
+    out += std::to_string(m_angleInit.to<double>());
+    out += ",";
+
+    out += std::to_string(m_landingAngle.to<double>());
+
+    return out;
+}
+#endif
