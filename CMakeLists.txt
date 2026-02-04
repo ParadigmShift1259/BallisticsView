@@ -20,6 +20,7 @@ qt_add_qml_module(appBallisticsView
         QML_FILES LabeledSlider.qml
         SOURCES Calculations.cpp Calculations.h
         SOURCES units/units.h
+        QML_FILES AlgInfoTextRow.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
