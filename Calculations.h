@@ -25,6 +25,7 @@ constexpr kilogram_t c_flywheelMass = pound_t(1.5);
 
 constexpr meter_t c_flywheelRadius = inch_t(2.0);
 constexpr scalar_t flywheelRotInertiaFrac = 1.0 / 2.0;  // 1/2 Mr^2 solid cylinder
+//constexpr scalar_t flywheelRotInertiaFrac = 0.6659;  // based on the SDS brass hollow flywheel with MOI 4 [pound][square inches]
 constexpr auto c_flywheelRotInertia = flywheelRotInertiaFrac * c_flywheelMass * c_flywheelRadius * c_flywheelRadius;
 
 // 2022 constexpr kilogram_t cargoMass = ounce_t(9.5);
@@ -65,10 +66,6 @@ class Calculations : public QObject
     Q_PROPERTY(double flywheelRadius        READ flywheelRadius         NOTIFY physicalPropertiesChanged)
     Q_PROPERTY(double minAngle              READ minAngle               NOTIFY physicalPropertiesChanged)
     Q_PROPERTY(double maxAngle              READ maxAngle               NOTIFY physicalPropertiesChanged)
-    // kilogram_t m_flywheelMass = flywheelMass;
-    // meter_t m_flywheelRadius = flywheelRadius;
-    // degree_t m_maxAngle = maxAngle;
-    // degree_t m_minAngle = minAngle;
 
     Q_PROPERTY(double inputDist             READ inputDist              NOTIFY inputsAndOutputsChanged)
     Q_PROPERTY(double inputTargetDist       READ inputTargetDist        NOTIFY inputsAndOutputsChanged)
@@ -83,6 +80,7 @@ class Calculations : public QObject
 
     Q_PROPERTY(double outputRpms            READ outputRpms             NOTIFY inputsAndOutputsChanged)
     Q_PROPERTY(double outputInitAngle       READ outputInitAngle        NOTIFY inputsAndOutputsChanged)
+    Q_PROPERTY(double outputLandingAngle    READ outputLandingAngle     NOTIFY inputsAndOutputsChanged)
 
 public:
     Calculations();
@@ -113,6 +111,7 @@ public:
 
     double outputRpms() const { return m_rpmInit.value(); }
     double outputInitAngle() const { return m_angleInit.value(); }
+    double outputLandingAngle() const { return m_landingAngle.value(); }
 
     meter_t HubHeightToMaxHeight();
     void FitParabolaToThreePoints();

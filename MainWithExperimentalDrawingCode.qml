@@ -272,42 +272,48 @@ Window {
 			var a = _ballistics.parabolaFitAcoeff;
 			var b = _ballistics.parabolaFitBcoeff;
 			var c = 0.0;
-			var meterPerPx = 8.0 / canvas.width;	// Max shot dist 6.0 meters ~ 20 ft, use 8 meters wide for some margin
-			var xOffset = 1 / meterPerPx;
-			var yOffset = canvas.height / 4;//100;
+			var meterPerPxH = 8.0 / canvas.width;	// Max shot dist 6.0 meters ~ 20 ft, use 8 meters wide for some margin
+			var meterPerPxV = 5.0 / canvas.height;	// Ceiling height 5 meters
+
+			var floorOffset = 20;
+			var ceilingOffset = canvas.height - 350;
+			var xOffset = 1 / meterPerPxH;
+			var yOffset = canvas.height / 4;
 			var markerSize = 10;
 			var markerOffset =  markerSize / 2;
 			var xMarker = xOffset;
 			var yMarker = canvas.height - yOffset;
-			var wRobot = 0.762 / meterPerPx;
+			var wRobot = 0.762 / meterPerPxH;
 			var xRobot = xMarker - wRobot / 2;
-			var yRobot = canvas.height - 0.9144 / meterPerPx;	// bot was 36 inches in 2022
+			//var yRobot = canvas.height - 0.9144 / meterPerPxV;	// bot was 36 inches in 2022
+			var yRobot = canvas.height - (0.762 / meterPerPxV);	// bot is max 30 inches in 2026
 
 			// Stylings
 			ctx.strokeStyle = "blue";
 			ctx.lineWidth = 2;
 
 			// Draw Parabola
+			//---------------------------------------------------
 			ctx.beginPath();
 			//print("window xywh ", mainWindow.x, " ", mainWindow.y, " ", mainWindow.width, " ", mainWindow.height);
 			//print("canvas xywh ", canvas.x, " ", canvas.y, " ", canvas.width, " ", canvas.height);
-			//print("meterPerPx ", meterPerPx, " xOffset ", xOffset, " yOffset ", yOffset);
+			//print("meterPerPxH ", meterPerPxH, " xOffset ", xOffset, " yOffset ", yOffset);
 
-			print("x [meter],y [meter],x [px],y [px]");
+			//print("x [meter],y [meter],x [px],y [px]");
 
 			for (var xPx = 0; xPx <= width; xPx++) {
 				// Distance in meters to pixels
-				var xMeters = xPx * meterPerPx;
+				var xMeters = xPx * meterPerPxH;
 				// Parabola equation
 				var yMeters = a * Math.pow(xMeters, 2) + b * xMeters + c;
 
-				var yPx = canvas.height - yOffset - (yMeters / meterPerPx);	// Put y in pixels, invert to the canvas y axis
+				var yPx = canvas.height - yOffset - (yMeters / meterPerPxV);	// Put y in pixels, invert to the canvas y axis
 
 				//if (xPx === 0 || xPx === width / 2 || xPx === width)
 				//	print(xMeters, ",", yMeters, ",",  xPx, ",", yPx);
 
-				//if (xPx > _ballistics.parabolaFitX3 / meterPerPx) {
-					//print(xMeters, ",", yMeters, ",",  xPx, ",", yPx, " breaking loop xOffset ", xOffset, " _ballistics.parabolaFitX3 ", _ballistics.parabolaFitX3 / meterPerPx);
+				//if (xPx > _ballistics.parabolaFitX3 / meterPerPxH) {
+					//print(xMeters, ",", yMeters, ",",  xPx, ",", yPx, " breaking loop xOffset ", xOffset, " _ballistics.parabolaFitX3 ", _ballistics.parabolaFitX3 / meterPerPxH);
 				//	break;
 				//}
 
@@ -320,7 +326,9 @@ Window {
 				}
 			}
 			ctx.stroke();
+			//---------------------------------------------------
 
+			//---------------------------------------------------
 			// Highlight the 3 points on the parabola
 			ctx.strokeStyle = "red";
 			ctx.lineWidth = 1;
@@ -328,53 +336,86 @@ Window {
 			xOffset = xOffset - markerOffset;
 			yOffset = yOffset + markerOffset;
 
+			// Origin
 			ctx.beginPath();
 			ctx.moveTo(xMarker, yMarker);
 			ctx.ellipse(xMarker, yMarker, markerSize, markerSize);
 			ctx.stroke();
 
+			// Point above front rim
 			ctx.beginPath();
-			xMarker = xOffset + _ballistics.parabolaFitX2 / meterPerPx
-			yMarker = canvas.height - yOffset - _ballistics.parabolaFitY2 / meterPerPx;
+			xMarker = xOffset + _ballistics.parabolaFitX2 / meterPerPxH
+			yMarker = canvas.height - yOffset - _ballistics.parabolaFitY2 / meterPerPxV;
 			ctx.moveTo(xMarker, yMarker);
 			ctx.ellipse(xMarker, yMarker, markerSize, markerSize);
 			ctx.stroke();
 
+			// Landing target point
 			ctx.beginPath();
-			xMarker = xOffset + _ballistics.parabolaFitX3 / meterPerPx
-			yMarker = canvas.height - yOffset - _ballistics.parabolaFitY3 / meterPerPx;
+			xMarker = xOffset + _ballistics.parabolaFitX3 / meterPerPxH
+			yMarker = canvas.height - yOffset - _ballistics.parabolaFitY3 / meterPerPxV;
 			ctx.moveTo(xMarker, yMarker);
 			ctx.ellipse(xMarker, yMarker, markerSize, markerSize);
 			ctx.stroke();
+			//---------------------------------------------------
 
-			// Draw robot and hub
 			ctx.strokeStyle = "black";
+			// Set the line dash pattern: 5 pixels on, 3 pixels off
+			ctx.setLineDash([5, 3]);
 			ctx.lineWidth = 1;
-			ctx.beginPath();
 
-			xMarker = 1 / meterPerPx;
-			yMarker = canvas.height - yOffset;
-			ctx.moveTo(xRobot, yRobot);
-			ctx.rect(xRobot, yRobot, wRobot, 0.127 / meterPerPx);
-			ctx.moveTo(xRobot + 30, yRobot - 0.9144 / meterPerPx);
-			ctx.rect(xRobot + 30, yRobot - 0.9144 / meterPerPx, wRobot - 60, 0.9144 / meterPerPx);
+			// Draw floor line
+			//---------------------------------------------------
+			ctx.beginPath();
+			ctx.moveTo(0, canvas.height - floorOffset);
+			ctx.lineTo(canvas.width, canvas.height - floorOffset)
 			ctx.stroke();
+			//---------------------------------------------------
+
+			// Draw ceiling line
+			//---------------------------------------------------
+			ctx.beginPath();
+			ctx.moveTo(0, canvas.height - ceilingOffset);
+			ctx.lineTo(canvas.width, canvas.height - ceilingOffset)
+			ctx.stroke();
+			//---------------------------------------------------
+
+			ctx.setLineDash([]);
+			// Draw robot
+			//---------------------------------------------------
+			ctx.beginPath();
+			ctx.moveTo(xRobot, yRobot);
+			//ctx.ellipse(xRobot, yRobot, markerSize, markerSize);
+			ctx.rect(xRobot, yRobot, wRobot, 0.127 / meterPerPxV);	// 0.127 m = 5 inch bumper height
+			ctx.moveTo(xRobot + 30, yRobot - robotHeight / meterPerPxV);	// 30 pixel "indent" for robot superstructure
+			ctx.rect(xRobot + 30, yRobot - robotHeight / meterPerPxV, wRobot - 60, robotHeight / meterPerPxV);
+			ctx.stroke();
+			//---------------------------------------------------
 
 			// Draw hub
-			ctx.beginPath();
-			var wHub = hubConeDiameter / meterPerPx;
-			var hHub = hubHeightSlider.value / meterPerPx;
-			//var xHub = (distSlider.value - hubConeRadius) / meterPerPx;
-			var xHub = xMarker + _ballistics.parabolaFitX2 / meterPerPx;
+			//---------------------------------------------------
+			// Reset marker coords to point above front rim
+			xMarker = xOffset + _ballistics.parabolaFitX2 / meterPerPxH
+			yMarker = canvas.height - yOffset - _ballistics.parabolaFitY2 / meterPerPxV;
+			var wHub = hubConeDiameter / meterPerPxH;
+			var hHub = hubHeightSlider.value / meterPerPxV;
+
+			var xHub = xMarker;
+
 			//var yHub = canvas.height - hHub + kSlider.value * canvas.width / 400;
-			var yHub = canvas.height - hHub + -40 * canvas.width / 400;
-			//var yHub = canvas.height - (_ballistics.parabolaFitY2 - heightAboveHubSlider.value) / meterPerPx;
+			//var yHub = canvas.height - hHub;// + -40 * canvas.width / 400;
+			//var yHub = canvas.height - (_ballistics.parabolaFitY2 - heightAboveHubSlider.value) / meterPerPxV;
+			var yHub = yMarker + heightAboveHubSlider.value / meterPerPxV;	// Adding to flip the y axis
+
+			ctx.beginPath();
 			ctx.moveTo(xHub, yHub);
+			//ctx.ellipse(xHub, yHub, markerSize, markerSize);
 			ctx.rect(xHub, yHub, wHub, hHub);
 			ctx.fillStyle= Qt.rgba(0, 0, 0, 0.0);
 			ctx.fillRect(xHub + 1, yHub + 1, wHub - 2, hHub - 2);
-			//print("Hub xywh ", xHub, " ", yHub, " ", wHub, " ", hubHeight / meterPerPx);
+			//print("Hub xywh ", xHub, " ", yHub, " ", wHub, " ", hubHeight / meterPerPxV);
 			ctx.stroke();
+			//---------------------------------------------------
 		}
 	}
  }

@@ -27,7 +27,7 @@ meter_t Calculations::HubHeightToMaxHeight()
   auto bValue = (dist * dist * hAbove - m_xInput * m_xInput * hTarg) / x;
 
   m_heightMax = -1.0 * bValue * bValue / (4.0 * aValue) + m_heightRobot;
-  qDebug("m_heightMax %.3f", m_heightMax.value());
+  //qDebug("m_heightMax %.3f", m_heightMax.value());
 
   return m_heightMax;
 }
@@ -53,7 +53,7 @@ void Calculations::FitParabolaToThreePoints()
     double y3 = (m_heightTarget - m_heightRobot).value();
 
     double commonDenominator = (x1 - x2) * (x1 - x3) * (x2 - x3);
-    qDebug("common denom max h %.3f", commonDenominator);
+    //qDebug("common denom max h %.3f", commonDenominator);
 
     // General equation for a vertical parabola y = ax^2 + bx + c
     m_aVal = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / commonDenominator;
@@ -109,14 +109,6 @@ second_t Calculations::CalcTotalTime()
 {
     m_timeTotal = CalcTimeOne() + CalcTimeTwo();
 
-    // Estimate the landing angle
-    // final vy = v0 - gt
-    meters_per_second_t vyfinal = m_velYInit - gravity * m_timeTotal;
-    meters_per_second_t vxfinal = m_velXInit; // No drag
-    radian_t beta = units::math::atan(vyfinal / vxfinal);
-    m_landingAngle = beta;
-    qDebug("m_landingAngle %.3f CalcTotalTime()", m_landingAngle);
-
     return m_timeTotal;
 }
 
@@ -153,7 +145,9 @@ meters_per_second_t Calculations::CalcInitVel()
   {
     // Angle may be clamped to reflect the robot's physical limitations
     m_angleInit = degree_t(std::clamp(m_angleInit.value(), m_minAngle.value(), m_maxAngle.value()));
-    // TODO if we clamp the angle, do we need to recalc the vx and vy as inputs to CalcInitVelWithAngle()?
+    // If we clamp the angle, we need to recalc the vx and vy as inputs to CalcInitVelWithAngle()
+    m_velYInit = m_velInit * math::sin(m_angleInit);
+    m_velXInit = m_velInit * math::cos(m_angleInit);
   }
 
   CalcInitVelWithAngle();
@@ -164,7 +158,7 @@ meters_per_second_t Calculations::CalcInitVel()
   meters_per_second_t vxfinal = m_velXInit; // No drag
   radian_t beta = units::math::atan(vyfinal / vxfinal);
   m_landingAngle = beta;
-  qDebug("m_landingAngle %.3f CalcInitVel()", m_landingAngle);
+  //qDebug("m_landingAngle %.3f CalcInitVel()", m_landingAngle);
 
   return m_velInit;
 }
@@ -217,6 +211,12 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(  meter_t distance        //
 
   CalcInitVel();
 
+  // See Monkey Box #4 - Shooter Flywheel Physics https://www.youtube.com/watch?v=g8lGrWJ6BHc
+  // https://lynbrookrobotics.com/
+  // The Funky Monkeys Team 846
+  //
+  // New in 2026 https://docs.carlmontrobotics.org/jupyter_notebooks/files/FlywheelShooter.html
+  // Points to this "paper" https://docs.carlmontrobotics.org/jupyter_notebooks/files/FlywheelShooter.html
   m_rotVelInit = radian_t(1.0) * m_velInit / m_flywheelRadius * (2.0 + (fuelRotInertiaFrac + 1.0) / (flywheelRotInertiaFrac * m_massRatio));
   m_rpmInit = m_rotVelInit;
 
