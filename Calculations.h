@@ -38,8 +38,8 @@ constexpr auto fuelRotInertia = fuelRotInertiaFrac * fuelMass * fuelRadius * fue
 constexpr auto c_massRatio = c_flywheelMass / fuelMass;
 //constexpr auto rotInertiaRatio = c_flywheelRotInertia / fuelRotInertia;
 
-constexpr degree_t c_minAngle = degree_t(30.3);
-constexpr degree_t c_maxAngle = degree_t(75.0);
+constexpr degree_t c_minAngle = degree_t(20.0);
+constexpr degree_t c_maxAngle = degree_t(65.0);
 
 //constexpr foot_t robotHeight = foot_t(3.0);
 constexpr foot_t robotHeight = inch_t(30.0);            // Height of center of fuel at launch

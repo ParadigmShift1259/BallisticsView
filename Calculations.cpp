@@ -21,15 +21,18 @@ meter_t Calculations::HubHeightToMaxHeight()
   auto hTarg = m_heightTarget - m_heightRobot;
   auto dist = m_xInput + m_xTarget;
   auto hAbove = m_heightAboveHub - m_heightRobot;
-
-  //qDebug("dist %.3f hTarg %.3f hAbove %.3f"
-  //       , dist.value()
-  //       , hTarg.value()
-  //       , hAbove.value());
-
   auto x = m_xTarget * m_xInput * dist; // common denominator, differs in sign from FitParabolaToThreePoints() due to the ordering of the points
+
+  // qDebug("dist %.3f hTarg %.3f hAbove %.3f x %.3f"
+  //        , dist.value()
+  //        , hTarg.value()
+  //        , hAbove.value()
+  //        , x.value());
+
   auto aValue = (m_xInput * hTarg - dist * hAbove) / x;
   auto bValue = (dist * dist * hAbove - m_xInput * m_xInput * hTarg) / x;
+  // qDebug("aValue %.3f", aValue.value());
+  // qDebug("bValue %.3f", bValue.value());
 
   m_heightMax = (-1.0 * bValue * bValue / (4.0 * aValue)) + m_heightRobot;
   //qDebug("m_heightMax %.3f", m_heightMax.value());
@@ -146,16 +149,26 @@ meters_per_second_t Calculations::CalcInitVel()
 
   // Get the initial angle from trigonometry
   m_angleInit = math::atan(m_velYInit / m_velXInit);
+  bool bClamped = false;
   if (m_bClampAngle && m_minAngle.value() < m_maxAngle.value())
   {
     // Angle may be clamped to reflect the robot's physical limitations
-    m_angleInit = degree_t(std::clamp(m_angleInit.value(), m_minAngle.value(), m_maxAngle.value()));
-    // If we clamp the angle, we need to recalc the vx and vy as inputs to CalcInitVelWithAngle()
-    m_velYInit = m_velInit * math::sin(m_angleInit);
-    m_velXInit = m_velInit * math::cos(m_angleInit);
+    double angle = std::clamp(m_angleInit.value(), m_minAngle.value(), m_maxAngle.value());
+    if (fabs(angle - m_angleInit.value()) > 0.0001)
+    {
+        bClamped = true;
+        m_angleInit = degree_t{angle};
+    }
   }
 
   CalcInitVelWithAngle();
+
+  if (bClamped)
+  {
+      // If we clamp the angle, we need to recalc the vx and vy as inputs to CalcInitVelWithAngle()
+      m_velYInit = m_velInit * math::sin(m_angleInit);
+      m_velXInit = m_velInit * math::cos(m_angleInit);
+  }
 
   // Estimate the landing angle
   // final vy = v0 - gt
@@ -206,6 +219,11 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(  meter_t distance        //
   m_xTarget = targetDist;
   m_heightTarget = targetHeight;
   m_heightAboveHub = heightAboveHub;
+
+  // qDebug("m_xInput %f", m_xInput.value());
+  // qDebug("m_xTarget %f", m_xTarget.value());
+  // qDebug("m_heightTarget %f", m_heightTarget.value());
+  // qDebug("m_heightAboveHub %f", m_heightAboveHub.value());
 
   if (m_xTarget.value() == 0.0)
   {
