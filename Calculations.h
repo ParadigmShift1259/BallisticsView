@@ -30,7 +30,7 @@ constexpr auto c_flywheelRotInertia = flywheelRotInertiaFrac * c_flywheelMass * 
 
 // 2022 constexpr kilogram_t cargoMass = ounce_t(9.5);
 constexpr kilogram_t fuelMass = pound_t(0.5);
-constexpr meter_t fuelRadius = inch_t(5.91);
+constexpr meter_t fuelRadius = inch_t(5.91 / 2);
 //constexpr scalar_t fuelRotInertiaFrac = 2.0 / 3.0;  // 2/3 Mr^2 hollow sphere
 constexpr scalar_t fuelRotInertiaFrac = 2.0 / 5.0;  // 2/5 Mr^2 solid sphere
 constexpr auto fuelRotInertia = fuelRotInertiaFrac * fuelMass * fuelRadius * fuelRadius;
@@ -42,7 +42,7 @@ constexpr degree_t c_minAngle = degree_t(30.3);
 constexpr degree_t c_maxAngle = degree_t(75.0);
 
 //constexpr foot_t robotHeight = foot_t(3.0);
-constexpr foot_t robotHeight = inch_t(25.0);            // Height of center of fuel at launch
+constexpr foot_t robotHeight = inch_t(30.0);            // Height of center of fuel at launch
 constexpr foot_t defaultTargetDist = foot_t(2.5);       // Upper hub cone was 4 ft across (1.2192 meters); this is the offset into the cone from the rim
 //constexpr foot_t defaultTargetHeight = foot_t(8.67);
 //2022 constexpr foot_t defaultTargetHeight = inch_t(80.0);    // Upper hub went from 5 ft 6 in to 8 ft 8 in (66 to 104 inches); target height should bounded by this range

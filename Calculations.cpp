@@ -11,8 +11,8 @@ using namespace std;
 
 Calculations::Calculations()
 {
-  m_heightRobot = foot_t(3.0);
-  m_heightTarget = foot_t(8.67);
+  m_heightRobot = robotHeight;
+  m_heightTarget = defaultTargetHeight;
 }
 
 // This fits the 3 points to the parabola in order to calculate the max height
@@ -21,12 +21,17 @@ meter_t Calculations::HubHeightToMaxHeight()
   auto hTarg = m_heightTarget - m_heightRobot;
   auto dist = m_xInput + m_xTarget;
   auto hAbove = m_heightAboveHub - m_heightRobot;
-  auto x = m_xTarget * m_xInput * dist; // common denominator, differs in sign from FitParabolaToThreePoints() due to the ordering of the points
 
+  //qDebug("dist %.3f hTarg %.3f hAbove %.3f"
+  //       , dist.value()
+  //       , hTarg.value()
+  //       , hAbove.value());
+
+  auto x = m_xTarget * m_xInput * dist; // common denominator, differs in sign from FitParabolaToThreePoints() due to the ordering of the points
   auto aValue = (m_xInput * hTarg - dist * hAbove) / x;
   auto bValue = (dist * dist * hAbove - m_xInput * m_xInput * hTarg) / x;
 
-  m_heightMax = -1.0 * bValue * bValue / (4.0 * aValue) + m_heightRobot;
+  m_heightMax = (-1.0 * bValue * bValue / (4.0 * aValue)) + m_heightRobot;
   //qDebug("m_heightMax %.3f", m_heightMax.value());
 
   return m_heightMax;
@@ -34,12 +39,12 @@ meter_t Calculations::HubHeightToMaxHeight()
 
 void Calculations::FitParabolaToThreePoints()
 {
-    // qDebug("m_xInput %.3f m_xTarget %.3f m_heightAboveHub %.3f m_heightTarget %.3f m_heightRobot %.3f"
-    //        , m_xInput.value()
-    //        , m_xTarget.value()
-    //        , m_heightAboveHub.value()
-    //        , m_heightTarget.value()
-    //        , m_heightRobot.value());
+    //qDebug("m_xInput %.3f m_xTarget %.3f m_heightAboveHub %.3f m_heightTarget %.3f m_heightRobot %.3f"
+    //       , m_xInput.value()
+    //       , m_xTarget.value()
+    //       , m_heightAboveHub.value()
+    //       , m_heightTarget.value()
+    //       , m_heightRobot.value());
 
     double dist = m_xInput.value();
 
@@ -193,14 +198,15 @@ Q_INVOKABLE double Calculations::calc(double distance
 
 revolutions_per_minute_t Calculations::CalcInitRPMs(  meter_t distance        // Floor distance to "front" rim of cone
                                                     , meter_t targetDist      // Target distance within cone from rim
-                                                    , meter_t heightAboveHub  // How far above Hub to place the shot
-                                                    , meter_t targetHeight    // Height at end point within cone
+                                                    , meter_t heightAboveHub  // How far above Hub to place the shot (includes height of hub)
+                                                    , meter_t targetHeight    // Height at end point within cone (includes height where the hub code starts)
                                                    )
 {
   m_xInput = distance;
   m_xTarget = targetDist;
   m_heightTarget = targetHeight;
   m_heightAboveHub = heightAboveHub;
+
   if (m_xTarget.value() == 0.0)
   {
     //m_xTarget = meter_t(0.000000001);    // Dividing by this, use 1nm to avoid INF and/or NAN
